@@ -30,7 +30,11 @@ Stickers created with on the fly text
 
 ## Integrating Bobble SDK in your App
 
-- Download the bobble-sdk.zip file from [here](https://github.com/touchtalent/bobble-android-sdk-public/blob/master/bobble-android-sdk.zip) and unzip it.
+- Download the bobble-android-sdk.zip file from [here](https://github.com/touchtalent/bobble-android-sdk-public/blob/master/bobble-android-sdk.zip) and unzip it.
+- Include the modules from unzipped folder in your project. This will add the following in your settings.gradle
+```groovy
+include ':bobble-android-sdk'
+```
 - Add this in your build.gradle
 ```groovy
 compile project(':bobble-android-sdk')
@@ -61,7 +65,7 @@ If you are using proguard, then add this rule in proguard-project.txt
 -keep class **$Properties
 ```
 
- ### To start Bobble onboarding
+ To start Bobble onboarding
  
  Add the following in your activity
  
