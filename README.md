@@ -28,18 +28,15 @@ Sticker Pack, Collection of stickers.
 #### OTF Stickers
 Stickers created with on the fly text
 
-
-
 ## Integrating Bobble SDK in your App
 
-Add this in your build.gradle`
-
+- Download the bobble-sdk.zip file from [here](https://github.com/touchtalent/bobble-android-sdk-public/blob/master/bobble-android-sdk.zip) and unzip it.
+- Add this in your build.gradle
 ```groovy
-compile 'com.bobble.android:bobble-android-sdk:0.3.0'
+compile project(':bobble-android-sdk')
 ```
-
+  
 Then you are ready to use bobbleSDK
-
 
 ##### 
 Then initialize it in onCreate() Method of application class, :
@@ -64,69 +61,25 @@ If you are using proguard, then add this rule in proguard-project.txt
 -keep class **$Properties
 ```
 
-
- Initialize the SDK before executing any other operations,
+ ### To start Bobble onboarding
  
- Now you call BobbleSDK methods:
+ Add the following in your activity
  
- call BobbleSDK.isReady to check if SDK is ready to do
-something or not
-
-```java
- boolean isBobbleReady = BobbleSDK.isReady();
-```
-
- for checking image pass either bitmap or path of bitmap and
-listerner for faceDetection:
-
-```java
- BobbleSDK.checkImage(bitmap, new FaceDetectionListener() {
+ ```java
+ startActivityForResult(BobbleCreationActivity.newIntent(MainActivity.this), BobbleSDK.REQUEST_CODE);
+ ```
  
-  @Override
-   public void onSingleFaceDetection(RectF faceRectF) {
-   Log.d(Constants.TAG, " onSingleFaceDetection with
-   bitmap parameter :" + faceRectF.toString());
-  }
+ Add this in your activity to get callback on completion of BobbleOnBoarding or onError, It returns the faceId on successful completion
  
-  @Override
-   public void onMultipleFaceDetection(List<RectF>
-   facesRectFList) {
-   Log.d(Constants.TAG, " onMultipleFaceDetection with
-   bitmap parameter :" + facesRectFList.toString());
+ ```java
+ @Override
+ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+   super.onActivityResult(requestCode, resultCode, data);
+   if (requestCode == BobbleSDK.REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+    long faceId = data.getLongExtra(BobbleSDK.FACE_ID, 0L);
+    Log.d(TAG, "faceId : " + faceId);
+   }
   }
- 
-  @Override
-   public void onNoFaceDetection() {
-   Log.d(Constants.TAG, " onNoFaceDetection with bitmap
-   parameter ");
-  }
- 
-  @Override
-   public void onError(String error) {
-   Log.d(Constants.TAG, " onError : " + error);
-  }
-  
- });
-```
-
- To get BobbleImage : pass path or bitmap, gender and
-listerner
-
-```java
- BobbleSDK.bobblify(path, "female", new
-  BobblificationListener() {
-  
-  @Override
-  public void onBobblificationComplete(long faceId) {
-
-  }
-  
-  @Override
-  public void onError(String error) {
-
-  }
-  
- });
  ```
  
  To get all faces:
@@ -233,62 +186,20 @@ You should invoke initialize API from your landing activity.
 This API accepts two arguments, context and client id,  context for application context and client id is used to authenticate and authorize your application with Bobble server. Both of the arguments cannot be Null.
 
 
-## 2. isReady
- ```java
- public static boolean isReady()
-  ```
-Method to check if SDK is ready to do something.
-
-
-## 3. shutDown
+## 2. shutDown
  ```java
 public static void shutDown() 
  ```
 Method to close bobble SDK instance.
 
-
-Precondition:- SDK should be enabled
-
-## 4. checkImage
- ```java
-public static void checkImage(Bitmap bitmap, final FaceDetectionListener faceDetectionListener)
- ```
- ```java
-
-public static void checkImage(String path, final FaceDetectionListener faceDetectionListener)
- ```
-
-This is to test Face detection - Single Face,  Multiple faces or No face detected scenarios
-
-First argument can be image or image path.(Path cannot be Null)
-
-Preconditions - SDK should be enabled and Bobble should be ready.
-
-
-## 5. bobblify
- ```java
-public static void bobblify(String path, String gender, BobblificationListener bobblificationListener)
- ```
-  ```java
-public static void bobblify(Bitmap bitmap, String gender, BobblificationListener bobblificationListener)
- ```
- 
-This method is to create boblified heads. 
-
-First argument is image or image path. Second argument “gender” can have 2 values - male or female. 
-
-Preconditions - SDK should be enabled. Bobble should be ready. Image/Path and Gender cannot be null.
-
-## 6. createSticker
+## 3. createSticker
  ```java
 public static void createSticker(final BobbleHead bobbleHead, final Sticker sticker, final StickerCreationListener stickerCreationListener)
  ```
  
 This method is for creating stickers. The first argument is for bobblified head and second is for selected sticker.
 
-Precondition - SDK should be enabled
-
-## 7. createStickerOnTheFly
+## 4. createStickerOnTheFly
  ```java
 public static void createStickerOnTheFly(final BobbleHead bobbleHead, final Sticker sticker, String text, final StickerCreationListener stickerCreationListener) 
  ```
@@ -296,30 +207,26 @@ public static void createStickerOnTheFly(final BobbleHead bobbleHead, final Stic
 To create stickers with OTF text.
 First argument accepts bobblified head, second argument is for selected sticker, third argument is for OTF text (this value should not be Null). 
 
-Precondition - SDK should be enabled
-
-## 8.  getAllFaces
+## 5.  getAllFaces
  ```java
 public static List<Face> getAllFaces()
  ```
- 
-To get all faces. This will return a list of faces. 
 
-## 9. getAllBobbleHeads
+## 6. getAllBobbleHeads
  ```java
 public static List<BobbleHead> getAllBobbleHeads()
  ```
  
 To get a list of all bobblified heads for all faces
 
-## 10. getBobbleHeadForFaceId
+## 7. getBobbleHeadForFaceId
  ```java
 public static List<BobbleHead> getBobbleHeadForFaceId(final long faceId)
  ```
 To get list of all bobblified heads for a particular faceId
 
 
-## 11.  getPreferredBobbleHeadForFaceId
+## 8.  getPreferredBobbleHeadForFaceId
  ```java
 public static BobbleHead getPreferredBobbleHeadForFaceId(final long faceId) 
  ```
@@ -328,7 +235,7 @@ This will return the preferred head for a particular faceId, the priority is set
 Note:  SDK must be enabled and headList should not be null or zero
 
 
-## 12. getAllStickerCategory
+## 9. getAllStickerCategory
  ```java
 public static List<StickerCategory> getAllStickerCategory()
  ```
@@ -336,20 +243,20 @@ public static List<StickerCategory> getAllStickerCategory()
 To get list of all the sticker packs
 
 
-## 13. getStickerListForStickerCategoryId
+## 10. getStickerListForStickerCategoryId
  ```java
 public static List<Sticker> getStickerListForStickerCategoryId(final long stickerCategoryId, final BobbleHead bobbleHead)
  ```
 To fetch all sticker for a particular stickercategory id. It accepts two arguments, first is stickercategoryid which is unique id for each stickercategory, second is bobblified head.
 
-## 14. getStickerList
+## 11. getStickerList
  ```java
 public static List<Sticker> getStickerList(final BobbleHead bobbleHead)
  ```
 To fetch all sticker corresponding to a bobbleHead.
 
 
-## 15.  getApiStickerCategoryList
+## 12.  getApiStickerCategoryList
 ```java
 public static void getApiStickerCategoryList(int limit, int page, final ApiStickerCategoryListListener apiStickerCategoryListListener) 
  ```
@@ -360,42 +267,42 @@ To get pagewise sticker categories list. Arguments are :-
 
 2. page to set no. of pages
 
-## 16. downloadStickerCategoryForId
+## 13. downloadStickerCategoryForId
  ```java
 public static void downloadStickerCategoryForId(long id, final DownloadListener downloadListener) 
  ```
 
 It accepts sticker category id as an argument to download the pack.
 
-## 17. deleteSticker
+## 14. deleteSticker
  ```java
 public static void deleteSticker(long stickerId, final DeleteListener deleteListener) 
  ```
 
 It accepts sticker id as an argument to delete the sticker.
 
-## 18. deleteStickerCategory
+## 15. deleteStickerCategory
  ```java
 public static void deleteStickerCategory(long stickerCategoryId, final DeleteListener deleteListener) 
  ```
 
 It accepts sticker category id as an argument to delete the sticker category.
 
-## 19. deleteFace
+## 16. deleteFace
  ```java
 public static void deleteFace(long faceId, final DeleteListener deleteListener) 
  ```
 
 It accepts face id as an argument to delete the face and the associated bobble heads.
 
-## 20. deleteBobbleHead
+## 17. deleteBobbleHead
  ```java
 public static void deleteBobbleHead(long bobbleHeadId, final DeleteListener deleteListener) 
  ```
 
 It accepts bobble head id as an argument to delete the bobble head.
 
-## 21. seed
+## 18. seed
  ```java
 public static void seed(int rawResId, final SeedListener seedListener) 
  ```
